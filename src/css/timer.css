@@ -1,0 +1,11 @@
+.timer {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
