@@ -1,10 +1,10 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-let nowadays = 'null';
-let selectedTime = 'null';
+let selectedTime;
 
 const refs = {
+  input: document.querySelector('#datetime-picker'),
   startBtn: document.querySelector('button[data-start]'),
   days: document.querySelector('[data-days]'),
   hours: document.querySelector('[data-hours]'),
@@ -14,7 +14,7 @@ const refs = {
 
 refs.startBtn.disabled = true;
 
-flatpickr('#datetime-picker', {
+flatpickr(refs.input, {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
@@ -23,18 +23,39 @@ flatpickr('#datetime-picker', {
     console.log(selectedDates[0]);
     refs.startBtn.disabled = true;
 
-    nowadays = selectedDates[0].getTime();
-
     const currentDate = new Date();
-    selectedTime = nowadays - currentDate.getTime();
+    selectedTime = selectedDates[0].getTime() - currentDate.getTime();
 
     if (selectedDates[0].getTime() > currentDate.getTime()) {
       refs.startBtn.disabled = false;
       return;
     } else alert('Please choose a date in the future');
   },
-
 });
+
+let intervalId;
+
+refs.startBtn.addEventListener('click', timeOn);
+
+function timeOn() {
+  intervalId = setInterval(() => {
+    const { days, hours, minutes, seconds } = convertMs(selectedTime -= 1);
+    refs.days.textContent = days;
+    refs.hours.textContent = hours;
+    refs.minutes.textContent = minutes;
+    refs.seconds.textContent = seconds;
+
+    console.log(
+      `Днів:${days} Годин:${hours} Хвилин:${minutes} Секунд:${seconds}`
+    );
+    console.log(selectedTime);
+
+  }, 1000);
+}
+
+function pad(value) {
+  return String(value).padStart(2, "0");
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -46,38 +67,11 @@ function convertMs(ms) {
   // Remaining days
   const days = Math.floor(ms / day);
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = pad(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = pad(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = pad(Math.floor((((ms % day) % hour) % minute) / second));
 
   return { days, hours, minutes, seconds };
 }
-
-
-let intervalId;
-
-
-refs.startBtn.addEventListener('click', timeOn);
-
-
-
-function timeOn() {
-  intervalId = setInterval(() => {
-    const { days, hours, minutes, seconds } = convertMs(selectedTime);
-    refs.days.textContent = days;
-    refs.hours.textContent = hours;
-    refs.minutes.textContent = minutes;
-    refs.seconds.textContent = seconds;
-    console.log(selectedTime);
-
-    console.log(
-      `Днів:${days} Годин:${hours} Хвилин:${minutes} Секунд:${seconds}`
-    );
-    selectedTime --
-  }, 1000);
-}
-
-
-
