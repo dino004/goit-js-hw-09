@@ -42,8 +42,7 @@ refs.startBtn.addEventListener('click', onTimer);
 function onTimer() {
   intervalId = setInterval(() => {
     if (delta < 1000) {
-      clearInterval(intervalId);
-      refs.startBtn.disabled = true;
+      offTimer();
     } else {
       const currentDate = new Date();
       delta = selectedTime - currentDate;
@@ -54,6 +53,11 @@ function onTimer() {
       refs.seconds.textContent = seconds;
     }
   }, 1000);
+}
+
+function offTimer() {
+  clearInterval(intervalId);
+  refs.startBtn.disabled = true;
 }
 
 function pad(value) {
