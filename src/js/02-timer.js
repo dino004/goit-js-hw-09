@@ -1,6 +1,9 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
+import Notiflix from 'notiflix';
+import 'notiflix/build/notiflix-loading-aio';
+
 let selectedTime;
 
 const refs = {
@@ -23,38 +26,38 @@ flatpickr(refs.input, {
     console.log(selectedDates[0]);
     refs.startBtn.disabled = true;
 
+    selectedTime = selectedDates[0];
     const currentDate = new Date();
-    selectedTime = selectedDates[0].getTime() - currentDate.getTime();
-
-    if (selectedDates[0].getTime() > currentDate.getTime()) {
+    if (selectedDates[0] > currentDate) {
       refs.startBtn.disabled = false;
       return;
-    } else alert('Please choose a date in the future');
+    } else Notiflix.Notify.failure('Please choose a date in the future');
   },
 });
 
-let intervalId;
+let intervalId = 'null';
+let delta;
+refs.startBtn.addEventListener('click', onTimer);
 
-refs.startBtn.addEventListener('click', timeOn);
-
-function timeOn() {
+function onTimer() {
   intervalId = setInterval(() => {
-    const { days, hours, minutes, seconds } = convertMs(selectedTime -= 1);
-    refs.days.textContent = days;
-    refs.hours.textContent = hours;
-    refs.minutes.textContent = minutes;
-    refs.seconds.textContent = seconds;
-
-    console.log(
-      `Днів:${days} Годин:${hours} Хвилин:${minutes} Секунд:${seconds}`
-    );
-    console.log(selectedTime);
-
+    if (delta < 1000) {
+      clearInterval(intervalId);
+      refs.startBtn.disabled = true;
+    } else {
+      const currentDate = new Date();
+      delta = selectedTime - currentDate;
+      const { days, hours, minutes, seconds } = convertMs(delta);
+      refs.days.textContent = days;
+      refs.hours.textContent = hours;
+      refs.minutes.textContent = minutes;
+      refs.seconds.textContent = seconds;
+    }
   }, 1000);
 }
 
 function pad(value) {
-  return String(value).padStart(2, "0");
+  return String(value).padStart(2, '0');
 }
 
 function convertMs(ms) {
