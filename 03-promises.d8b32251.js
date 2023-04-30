@@ -1,0 +1,2 @@
+const e={firstDelay:document.querySelector("input[name=delay]"),delayStep:document.querySelector("input[name=step]"),amount:document.querySelector("input[name=amount]"),button:document.querySelector("button")};e.button.addEventListener("click",(t=>{var n,o;t.preventDefault(),(n=e.amount.value,o=e.firstDelay.value,new Promise(((e,t)=>{const u=Math.random()>.3;setInterval((()=>{u?e(`Fulfilled promise ${n} in ${o}ms`):t(`Reject promise ${n} in ${o}ms`)}))}))).then(resolve).catch(reject)}));
+//# sourceMappingURL=03-promises.d8b32251.js.map
