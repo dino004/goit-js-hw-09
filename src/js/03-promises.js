@@ -1,38 +1,41 @@
+import Notiflix from 'notiflix';
+import 'notiflix/build/notiflix-loading-aio';
+
 // Отримуємо доступ до елементів
-const refs = {
-  firstDelay: document.querySelector('input[name=delay]'),
-  delayStep: document.querySelector('input[name=step]'),
-  amount: document.querySelector('input[name=amount]'),
-  button: document.querySelector('button'),
-};
+const form = document.querySelector('.form');
+
+// Виклик сабміта
+form.addEventListener('submit', onSubmitForm);
+
+// Функція сабміта
+function onSubmitForm(e) {
+  e.preventDefault();
+
+  let delay = Number(form.delay.value);
+
+  for (let i = 1; i <= form.amount.value; i++) {
+    createPromise(i, delay)
+      .then(({ position, delay }) => {
+        Notiflix.Notify.success(`Fulfilled promise ${position} in ${delay}ms`);
+      })
+      .catch(({ position, delay }) => {
+        Notiflix.Notify.failure(`Rejected promise ${position} in ${delay}ms`);
+      });
+    delay += Number(form.step.value);
+  }
+}
 
 // Функція створення промісів
 function createPromise(position, delay) {
-  return new Promise((resolve, reject) => {
-    const shouldResolve = Math.random() > 0.3;
+  const obj = { position, delay };
+  const shouldResolve = Math.random() > 0.3;
 
-    setInterval(() => {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
       if (shouldResolve) {
-        resolve(`Fulfilled promise ${position} in ${delay}ms`);
-      } else {
-        reject(`Reject promise ${position} in ${delay}ms`);
+        res(obj);
       }
-    });
+      rej(obj);
+    }, delay);
   });
 }
-
-let i = 1;
-
-function position() {
-  i++;
-}
-
-function delay() {
-  refs.firstDelay.value;
-}
-
-// Виклик сабміта
-refs.button.addEventListener('click', e => {
-  e.preventDefault();
-  createPromise(refs.amount.value, refs.firstDelay.value).then(resolve).catch(reject);
-});
